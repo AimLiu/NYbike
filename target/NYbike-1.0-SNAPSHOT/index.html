@@ -299,15 +299,16 @@ desired effect
     <section id="mainContent" class="content container-fluid">
 
         <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-        <div id="main" class="c1" style="width: 1000px;height:1000px; display: inline-block"></div>
-        <div id="div1" class="c1" style="width: 600px;height:1000px; display: inline-block">
+        <div id="main" class="c1" style="width: 800px;height:800px; display: inline-block"></div>
+        <div id="div1" class="c1" style="width: 600px;height:800px; display: inline-block">
             <div id="div2" class="c1" style="height: 70px;">
                 站点id: <span id="sid"></span> &nbsp;&nbsp;&nbsp;
                 站点名称: <span id="sname"></span> &nbsp;&nbsp;&nbsp;
                 时间周期：<input  id="hour" type="number" min="1" value="1" onchange="myFunction(this)">
             </div>
-            <div id="div3" class="c1" style="height: 430px"></div>
-        </div><!--这是一个父div-->
+            <div id="div3" class="c1" style="height: 380px"></div>
+            <div id="div4" style="height: 430px; width: 300px; margin: 0px auto"></div>
+        </div>
 
         <!--------------------------
         | Your Page Content Here |
@@ -515,13 +516,13 @@ desired effect
             return;
         }
         // 封装请求参数
-        var params={
+        var params1={
             "sid": nameIdMap[params.name],
             "hour": hour
         }
         //显示加载动画
         //myChart2.showLoading();
-        $.get(url,params,function (result) {
+        $.get(url,params1,function (result) {
             console.log(result);
             option2 = {
                 tooltip: {},
@@ -540,7 +541,58 @@ desired effect
             };
             myChart2.setOption(option2);
         });
+        url = "history/perstation"
+        params = {
+            "id": nameIdMap[params.name],
+            "gender": 2
+        }
+        var myChart_04 = echarts.init(document.getElementById("div4"))
+        var option_04 = {
+            title: {
+                text: '站点用户组成',
+                subtext: '非常真实',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+            },
+            series: [
+                {
+                    name: '年龄段',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        }
+        $.get({
+            url: url,
+            data: params,
+            async: false,
+            success: (result) =>{
+                console.log(result.ageTemp[0])
+                for (var i = 0; i < result.ageTemp.length; i++) {
+                    option.series[0].data.push({
+                        value: result.sum[i],
+                        name: result.ageTemp[i]
+                    })
+                }
+            }
+        })
+        myChart_04.setOption(option_04)
     });
+
     function myFunction(){
         var url="realtime/nba";
         const newSid = document.getElementById("sid");
@@ -571,6 +623,67 @@ desired effect
         });
     }
     // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+<script type="text/javascript">
+    var url = "history/perstation"
+    var sid = document.getElementById("sid");
+    console.log(Number(sid.textContent));
+    var param ={
+        "id": Number(sid.textContent),
+        "gender": 1
+    }
+    var myChart = echarts.init(document.getElementById("div4"))
+    var option = {
+        title: {
+            text: '站点用户组成',
+            subtext: '非常真实',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+        },
+        series: [
+            {
+                name: '年龄段',
+                type: 'pie',
+                radius: '50%',
+                data: [],
+                // data: [
+                //     {value: 1048, name: '搜索引擎'},
+                //     {value: 735, name: '直接访问'},
+                //     {value: 580, name: '邮件营销'},
+                //     {value: 484, name: '联盟广告'},
+                //     {value: 300, name: '视频广告'}
+                // ],
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    }
+    $.get({
+        url: url,
+        data: param,
+        async: false,
+        success: (result) =>{
+            console.log(result.ageTemp[0])
+            for (var i = 0; i < result.ageTemp.length; i++) {
+                option.series[0].data.push({
+                    value: result.sum[i],
+                    name: result.ageTemp[i]
+                })
+            }
+        }
+    })
     myChart.setOption(option);
 </script>
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
