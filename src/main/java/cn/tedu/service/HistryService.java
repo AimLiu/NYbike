@@ -60,4 +60,15 @@ public class HistryService {
         return new PieView(ageTemp, sum);
     }
 
+    public DistributeVO findHotestStationByIdAndDay(int id, int day){
+        List<Entity> list = historytimeDao.listHotestStationByIdAndDay(id, day);
+        List<Integer> times = new ArrayList<>();
+        List<Integer> stationId = new ArrayList<>();
+
+        for (Entity entity : list) {
+            times.add(entity.getInt("times"));
+            stationId.add(entity.getInt("stationId"));
+        }
+        return new DistributeVO(stationId,times);
+    }
 }

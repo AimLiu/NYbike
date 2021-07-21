@@ -84,5 +84,14 @@ public class HistorytimeDao {
         }
         return list;
     }
-
+    public List<Entity> listHotestStationByIdAndDay(int stationId, int day){
+        String sql = "SELECT count(*) as `times`,`end_station_id` as `stationId` from t_trip_202006 WHERE `end_station_id` = ? AND DAY(`stoptime`) = ?;";
+        List<Entity> list = null;
+        try {
+            list = Db.use().query(sql, stationId, day);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
 }
