@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+</head>
+<body>
+    站点ID：<input id="sid" type="text"><br>
+    时间周期：<input id="hour" type="number" min="1" max="24" value='1' onblur="if (value==''){value=1}">
+    <button id="btn-search" onclick="fn1()">查询</button>
+    <div id="main" style="height: 400px;margin: 0px auto"></div>
+    <script type="text/javascript">
+        // 请求的路径
+        var url="realtime/nbc";
+        function fn1(){
+            // 1. 收集表单数据
+            var sid=$("#sid").val();
+            if(sid==""){
+                alert("站点id不能为空");
+                return;
+            }
+            var hour=$("#hour").val();
+            if(hour==""){
+                alert("时间周期不能为空");
+                return;
+            }
+            // 封装请求参数
+            var params={
+                "sid":sid,
+                "hour":hour
+            }
+            // 发送AJAX请求
+            $.get(url,params,function (result) {
+                console.log(result);
+                var myChart = echarts.init(document.getElementById('main'));
+                option = {
+                    xAxis: {
+                        type: 'category',
+                        data: result.xData
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data: result.yData,
+                        type: 'line'
+                    }]
+                };
+                myChart.setOption(option);
+            });
+        }
+    </script>
+</body>
+</html>

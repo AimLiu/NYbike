@@ -1,0 +1,7 @@
+url = jdbc:mysql://121.43.159.99:3306/nybikedb
+user = root
+password = root
+showSql = true
+formatSql = false
+showParams = true
+sqlLevel = debug

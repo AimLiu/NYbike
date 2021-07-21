@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>饼图</title>
+    <script src="js/echarts.min.js"></script>
+    <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+    <div id="main" onclick="openwin()" style="height: 400px; width: 300px; margin: 0px auto"></div>
+    <script type="text/javascript">
+        var url = "history/perstation"
+        var param ={
+            "id": 3142,
+            "gender": 1
+        }
+        var myChart = echarts.init(document.getElementById("main"))
+        var option = {
+            title: {
+                text: '站点用户组成',
+                subtext: '非常真实',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+            },
+            series: [
+                {
+                    name: '年龄段',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [],
+                    // data: [
+                    //     {value: 1048, name: '搜索引擎'},
+                    //     {value: 735, name: '直接访问'},
+                    //     {value: 580, name: '邮件营销'},
+                    //     {value: 484, name: '联盟广告'},
+                    //     {value: 300, name: '视频广告'}
+                    // ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        }
+        var redata=[]
+        $.get({
+            url: url,
+            data: param,
+            async: false,
+            success: (result) =>{
+                console.log(result.ageTemp[0])
+                for (var i = 0; i < result.ageTemp.length; i++) {
+                    option.series[0].data.push({
+                        value: result.sum[i],
+                        name: result.ageTemp[i]
+                    })
+                }
+            }
+        })
+        myChart.setOption(option);
+
+        function openwin()
+        { window.open (
+            "status1.html", "newwindow", "height=100, width=100, top=0,left=0,toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")}
+    </script>
+
+</body>
+</html>
