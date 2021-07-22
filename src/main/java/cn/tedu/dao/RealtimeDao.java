@@ -26,4 +26,20 @@ public class RealtimeDao {
         return list;
     }
 
+    public List<Entity> listDockRepaire(){
+        String sql = "select `station_id` as `id`, `num_docks_disabled` as `docks` from `t_status` " +
+                "where `station_status` = 'active'  " +
+                "AND (DAY(NOW()) - DAY(create_time)) < 1 " +
+                "AND `num_docks_disabled` != 0 " +
+                "GROUP BY `station_id` " +
+                "ORDER BY (num_bikes_disabled /(num_docks_available + num_bikes_available)) DESC LIMIT 10;";
+        List<Entity> list = null;
+        try {
+            list = Db.use().query(sql);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+
 }
