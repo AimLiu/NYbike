@@ -7,15 +7,10 @@
     <script src="js/echarts.min.js"></script>
 </head>
 <body>
-    <div style="height: 1000px; width: 800px">
-        <div id="div1" style="height: 500px; width: 350px"></div>
-    </div>
+    <div style="height: 1000px; width: 800px"></div>
     <script type="text/javascript">
         var url="history/weekhot";
         var param = [
-            {
-                "week": 22
-            },
             {
                 "week": 23
             },
@@ -24,14 +19,25 @@
             },
             {
                 "week": 25
+            },
+            {
+                "week": 26
             }
         ]
-        option_01 = {
+        var option_01 = {
+            title: {
+                text: '2020年6月每周热门站点',
+                subtext: 'data from Internet'
+            },
             tooltip: {
                 trigger: 'axis',
-                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                axisPointer: {
+                    type: 'shadow'
                 }
+            },
+            legend: {
+                data: ['2020年6月第1周','2020年6月第2周','2020年6月第3周','2020年6月第4周'],
+                left: 'right'
             },
             grid: {
                 left: '3%',
@@ -39,51 +45,31 @@
                 bottom: '3%',
                 containLabel: true
             },
-            xAxis: [
-                // {
-                //     type: 'category',
-                //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                //     axisTick: {
-                //         alignWithLabel: true
-                //     }
-                // }
-            ],
-            yAxis: [
-                {
-                    type: 'value',
-                    name: '流量'
-                }
-            ],
-            series: [
-                // {
-                //     name: '直接访问',
-                //     type: 'bar',
-                //     barWidth: '60%',
-                //     data: [10, 52, 200, 334, 390, 330, 220]
-                // }
-            ]
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
+                data: ['1','2','3','4','5','6','7','8','9','10']
+            },
+            series: []
         };
-        $.get({
-            url:url,
-            data:param[0],
-            async: false,
-            success: (result) =>{
-                console.log(result);
-                option_01.series.push({
-                    name: '使用次数',
-                    type: 'bar',
-                    barWidth: '60%',
-                    data: result.yData
-                })
-                option_01.xAxis.push({
-                    type: 'category',
-                    axisTick: {
-                        alignWithLabel: true
-                    },
-                    data:result.xData
-                })
-            }
-        })
+        for (var i = 0; i < 4; i++) {
+            $.get({
+                url:url,
+                data:param[i],
+                async: false,
+                success: (result) =>{
+                    console.log(result);
+                    option_01.series.push({
+                        name: '2020年6月第'+ (i+1) +'周',
+                        type: 'bar',
+                        data: result.yData
+                    })
+                }
+            })
+        }
         var myChart_01 = echarts.init(document.getElementById('div1'));
         myChart_01.setOption(option_01)
     </script>

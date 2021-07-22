@@ -268,10 +268,10 @@ desired effect
         <li>
             <a id="menuA1" href="javascript:;">
                 <i class="fa fa-hand-spock-o"></i>
-                <span>Link</span>
+                <span>站点服务</span>
             </a>
         </li>
-        <li><a id="menuA2" href="javascript:;"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
+        <li><a id="menuA2" href="javascript:;"><i class="fa fa-link"></i> <span>历史数据</span></a></li>
         <li class="treeview">
           <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span>
             <span class="pull-right-container">
@@ -429,7 +429,7 @@ desired effect
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=vQV1xW48CytDdo7XmGlT0hv3xGlod4nF"></script>
 <script type="text/javascript">
     bindPage("menuA1","subpage/status1.html")
-    bindPage("menuA2", "subpage/ScatterDemo2.html")
+    bindPage("menuA2", "subpage/perweekStation.html")
     function bindPage(id, url) {
         //为Id对应的按钮添加点击事件
         $("#"+id).click(function () {
@@ -562,7 +562,7 @@ desired effect
             },
             legend: {
                 orient: 'vertical',
-                left: 'left',
+                left: 'right',
             },
             series: [
                 {
@@ -609,7 +609,7 @@ desired effect
             },
             legend: {
                 orient: 'vertical',
-                left: 'left',
+                left: 'right',
             },
             series: [
                 {
@@ -703,13 +703,6 @@ desired effect
                 type: 'pie',
                 radius: '50%',
                 data: [],
-                // data: [
-                //     {value: 1048, name: '搜索引擎'},
-                //     {value: 735, name: '直接访问'},
-                //     {value: 580, name: '邮件营销'},
-                //     {value: 484, name: '联盟广告'},
-                //     {value: 300, name: '视频广告'}
-                // ],
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,
@@ -736,8 +729,5 @@ desired effect
     })
     myChart.setOption(option);
 </script>
-<!-- Optionally, you can add Slimscroll and FastClick plugins.
-     Both of these plugins are recommended to enhance the
-     user experience. -->
 </body>
 </html>

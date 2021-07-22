@@ -1,0 +1,73 @@
+<div id="div1" style="height: 800px; width: 1000px"></div>
+<script type="text/javascript">
+    var url="history/weekhot";
+    var param = [
+        {
+            "week": 22
+        },
+        {
+            "week": 23
+        },
+        {
+            "week": 24
+        },
+        {
+            "week": 25
+        }
+    ]
+    var option_01 = {
+        title: {
+            text: '2020年6月每周热门站点',
+            subtext: 'data from Internet'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        legend: {
+            data: ['2020年6月第1周','2020年6月第2周','2020年6月第3周','2020年6月第4周'],
+            left: 'right'
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+            type: 'category',
+            data: ['1','2','3','4','5','6','7','8','9','10']
+        },
+        series: [],
+        animationEasing: 'elasticOut',
+        animationDelayUpdate: function (idx) {
+            return idx * 5;
+        }
+    };
+    for (var i = 0; i < 4; i++) {
+        $.get({
+            url:url,
+            data:param[i],
+            async: false,
+            success: (result) =>{
+                console.log(result);
+                option_01.series.push({
+                    name: '2020年6月第'+ (i+1) +'周',
+                    type: 'bar',
+                    data: result.yData,
+                    animationDelay: function (idx) {
+                        return idx * 10;
+                    }
+                })
+            }
+        })
+    }
+    var myChart_01 = echarts.init(document.getElementById('div1'));
+    myChart_01.setOption(option_01)
+</script>
