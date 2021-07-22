@@ -40,11 +40,9 @@ public class HistorytimeDao {
     }
 
     public List<Entity> listHotestStationByDay(int day){
-        String sql = "SELECT `end_station_id`, count(*) as `times`, DAY(stoptime) as `day` " +
-                "from `t_trip_202006` " +
-                "where  DAY(stoptime) = ? " +
-                "GROUP BY `end_station_id` " +
-                "ORDER BY `times` DESC limit 10;";
+        String sql = "SELECT `station_id`, `times`  " +
+                "from `h_monthhot10_day` " +
+                "where  day = ? ;" ;
         //使用糊涂包
         List<Entity> list = null;
         try {
@@ -89,6 +87,19 @@ public class HistorytimeDao {
         List<Entity> list = null;
         try {
             list = Db.use().query(sql, stationId, day);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<Entity> listHotestStationByMonth(){
+        String sql = "SELECT distinct station_id "+
+                "from `h_monthhot10_day` ;";
+        //使用糊涂包
+        List<Entity> list = null;
+        try {
+            list = Db.use().query(sql);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

@@ -71,4 +71,15 @@ public class HistryService {
         }
         return new DistributeVO(stationId,times);
     }
+
+    public DistributeVO findHotestStationByMonth(){
+        List<Entity> list = historytimeDao.listHotestStationByMonth();
+        ArrayList<Integer> xData = new ArrayList<>();
+        ArrayList<Integer> yData = new ArrayList<>();
+        for (Entity entity : list) {
+            xData.add(entity.getInt("station_id"));
+            //yData.add(entity.getInt("times"));
+        }
+        return new DistributeVO(xData, yData);
+    }
 }

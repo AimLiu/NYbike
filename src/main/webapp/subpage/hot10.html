@@ -1,0 +1,127 @@
+<div id="main" style="width: 1300px;height:750px; display: inline-block"></div>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例 绑定容器的id
+    var myChart = echarts.init(document.getElementById('main'));
+
+    var _rawData=[['station_name','sum','Year']];
+
+    var url = "history/dayhot";
+    var url2 = "history/monthhot"
+
+    var hotStationId = [];
+    var hotStationName = []
+    $.get({
+        url : url2,
+        async : false,
+        success : function (result) {
+            hotStationId = result.xData;
+        }
+    })
+    for(var index in hotStationId)
+        hotStationName.push(idNameMap[hotStationId[index]]);
+    console.log(hotStationName)
+
+    for(var i = 1; i <= 30; i++){
+        var everyItem = [];
+        $.get({
+            url : url,
+            data : {"day":i},
+            async: false,
+            success:(result)=>{
+                for(var index = 0;index < 10; index++)
+                //_rawData.push([result.xData[index],result.yData[index],i]);
+                    _rawData.push([hotStationName[index],result.yData[index],i]);
+            }
+        })
+    }
+    console.log(_rawData);
+
+
+    run(_rawData)
+    function run(_rawData) {
+
+            var datasetWithFilters = [];
+            var seriesList = [];
+            var station_ids = hotStationId;
+            var station_names = hotStationName;
+            echarts.util.each(station_names, function (station_name) {
+                var datasetId = 'dataset_' + station_name;
+                datasetWithFilters.push({
+                    id: datasetId,
+                    fromDatasetId: 'dataset_raw',
+                    transform: {
+                        type: 'filter',
+                        config: {
+                            and: [
+                            //    { dimension: 'Year', gte: 1 },
+                                { dimension: 'station_name', '=': station_name }
+                            ]
+                        }
+                    }
+                });
+                seriesList.push({
+                    type: 'line',
+                    datasetId: datasetId,
+                    showSymbol: false,
+                    name: station_name,
+                    endLabel: {
+                        show: true,
+                        formatter: function (params) {
+                            //  console.log(params)
+                            return params.value[0] + ': ' + params.value[1];
+                        }
+                    },
+                    labelLayout: {
+                        moveOverlap: 'shiftY'
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    itemStyle: {
+                        normal: {
+                            lineStyle: {
+                                width: 4// 0.1的线条是非常细的了
+                            }
+                        }
+                    },
+                    encode: {
+                        x: 'Year',
+                        y: 'sum',
+                        label: ['station_name', 'sum'],
+                        itemName: 'Year',
+                        tooltip: ['sum'],
+                    }
+                });
+            });
+
+            option = {
+                animationDuration: 12000,
+                dataset: [{
+                    id: 'dataset_raw',
+                    source: _rawData
+                }].concat(datasetWithFilters),
+                title: {
+                    text: '月最热十大站点动态排序图'
+                },
+                tooltip: {
+                    order: 'valueDesc',
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    name: '2020-06',
+                    type: 'category',
+                   // nameLocation: 'right'
+                },
+                yAxis: {
+                    name: '总计'
+                },
+                grid: {
+                    right: 140
+                },
+                series: seriesList
+            };
+
+            myChart.setOption(option);
+
+        }
+</script>
