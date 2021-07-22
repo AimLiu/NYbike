@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>历史数据：四周进行比较</title>
+    <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+</head>
+<body>
+    <div style="height: 1000px; width: 800px">
+        <div id="div1" style="height: 500px; width: 350px"></div>
+    </div>
+    <script type="text/javascript">
+        var url="history/weekhot";
+        var param = [
+            {
+                "week": 22
+            },
+            {
+                "week": 23
+            },
+            {
+                "week": 24
+            },
+            {
+                "week": 25
+            }
+        ]
+        option_01 = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                // {
+                //     type: 'category',
+                //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                //     axisTick: {
+                //         alignWithLabel: true
+                //     }
+                // }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '流量'
+                }
+            ],
+            series: [
+                // {
+                //     name: '直接访问',
+                //     type: 'bar',
+                //     barWidth: '60%',
+                //     data: [10, 52, 200, 334, 390, 330, 220]
+                // }
+            ]
+        };
+        $.get({
+            url:url,
+            data:param[0],
+            async: false,
+            success: (result) =>{
+                console.log(result);
+                option_01.series.push({
+                    name: '使用次数',
+                    type: 'bar',
+                    barWidth: '60%',
+                    data: result.yData
+                })
+                option_01.xAxis.push({
+                    type: 'category',
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    data:result.xData
+                })
+            }
+        })
+        var myChart_01 = echarts.init(document.getElementById('div1'));
+        myChart_01.setOption(option_01)
+    </script>
+</body>
+</html>
