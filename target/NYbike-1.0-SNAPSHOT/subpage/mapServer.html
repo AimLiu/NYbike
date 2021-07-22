@@ -1,0 +1,305 @@
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<div id="main" class="c1" style="width: 820px;height:800px; display: inline-block"></div>
+<div id="div1" class="c1" style="width: 600px;height:800px; display: inline-block">
+    <div id="div2" class="c1" style="height: 70px;">
+        站点id: <span id="sid"></span> &nbsp;&nbsp;&nbsp;
+        站点名称: <span id="sname"></span> &nbsp;&nbsp;&nbsp;
+        时间周期：<input  id="hour" type="number" min="1" value="1" onchange="myFunction(this)">
+    </div>
+    <div id="div3" class="c1" style="height: 380px"></div>
+    <div class="c1" style="width: 599px; height: 350px">
+        <div id="div4" class="c1" style="height: 345px; width: 295px; float: left" ></div>
+        <div id="div5" class="c1" style="height: 345px; width: 298px; float: left"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例 绑定容器的id
+    var myChart = echarts.init(document.getElementById('main'));
+
+    var data=[];
+    // 基于geoCoordMap生成data中的内容
+    for(var key in geoCoordMap){
+        var obj={
+            name:key,
+            value:10
+        }
+        data.push(obj);
+    }
+
+    var convertData = function (data) {
+        var res = [];
+        for (var i = 0; i < data.length; i++) {
+            var geoCoord = geoCoordMap[data[i].name];
+            if (geoCoord) {
+                res.push({
+                    name: data[i].name,
+                    value: geoCoord.concat(data[i].value)
+                });
+            }
+        }
+        return res;
+    };
+
+    option = {
+        title: {
+            text: '纽约共享单车',
+            subtext: 'data from console',
+            sublink: 'http://baidu.com',
+            left: 'center'
+        },
+        tooltip : {
+            trigger: 'item'
+        },
+        bmap: {
+            center: [-73.985689,40.748455],
+            zoom: 15,
+            roam: true,
+            mapStyle: {
+            }
+        },
+        series : [
+            {
+                name: 'station',
+                type: 'scatter',
+                coordinateSystem: 'bmap',
+                data: convertData(data),
+                symbolSize: function (val) {
+                    return val[2];
+                },
+                encode: {
+                    value: 2
+                },
+                label: {
+                    formatter: '{b}',
+                    position: 'right',
+                    show: false
+                },
+                emphasis: {
+                    label: {
+                        show: true
+                    }
+                }
+            }
+        ]
+    };
+    //为图标添加点击时间
+    var myChart2 = echarts.init(document.getElementById('div3'));
+    myChart.on("click", function (params) {//params封装被点击物体的信息
+        $("#sname").text(params.name);      //从点击时间传入的组件对象中获取站点的名称
+        $("#sid").text(nameIdMap[params.name]);//在站点名称ID映射中取出站点ID
+        var url="realtime/nba";
+        var hour=$("#hour").val();
+        if(hour==""){
+            alert("时间周期不能为空");
+            return;
+        }
+        // 封装请求参数
+        var params1={
+            "sid": nameIdMap[params.name],
+            "hour": hour
+        }
+        //显示加载动画
+        //myChart2.showLoading();
+        $.get(url,params1,function (result) {
+            console.log(result);
+            option2 = {
+                tooltip: {},
+                xAxis: {
+                    type: 'category',
+                    data: result.xData
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: result.yData,
+                    type: 'line',
+                    smooth: true
+                }]
+            };
+            myChart2.setOption(option2);
+        });
+        url = "history/perstation"
+        params2 = {
+            "id": nameIdMap[params.name],
+            "gender": 2
+        }
+        var myChart_04 = echarts.init(document.getElementById("div4"))
+        var myChart_05 = echarts.init(document.getElementById("div5"))
+        var option_04 = {
+            title: {
+                text: '该站点男性比例',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'right',
+            },
+            series: [
+                {
+                    name: '年龄区间',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        }
+        $.get({
+            url: url,
+            data: params2,
+            async: false,
+            success: (result) =>{
+                console.log(result.ageTemp[0])
+                for (var i = 0; i < result.ageTemp.length; i++) {
+                    option_04.series[0].data.push({
+                        value: result.sum[i],
+                        name: result.ageTemp[i]
+                    })
+                }
+            }
+        })
+        myChart_04.setOption(option_04)
+        params3 = {
+            "id": nameIdMap[params.name],
+            "gender": 1
+        }
+        var option_05 = {
+            title: {
+                text: '该站点女性比例',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'right',
+            },
+            series: [
+                {
+                    name: '年龄区间',
+                    type: 'pie',
+                    radius: '50%',
+                    data: [],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        }
+        $.get({
+            url: url,
+            data: params3,
+            async: false,
+            success: (result) =>{
+                console.log(result.ageTemp[0])
+                for (var i = 0; i < result.ageTemp.length; i++) {
+                    option_05.series[0].data.push({
+                        value: result.sum[i],
+                        name: result.ageTemp[i]
+                    })
+                }
+            }
+        })
+        myChart_05.setOption(option_05)
+    });
+
+    function myFunction(){
+        var url="realtime/nba";
+        const newSid = document.getElementById("sid");
+        var hour=$("#hour").val();
+        var params={
+            "sid": newSid.innerText,
+            "hour": hour
+        }
+        myChart2.clear();
+        $.get(url,params,function (result) {
+            console.log(result);
+            option2 = {
+                tooltip: {},
+                xAxis: {
+                    type: 'category',
+                    data: result.xData
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: result.yData,
+                    type: 'line',
+                    smooth: true
+                }]
+            };
+            myChart2.setOption(option2);
+        });
+    }
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+<script type="text/javascript">
+    var url = "history/perstation"
+    var sid = document.getElementById("sid");
+    console.log(Number(sid.textContent));
+    var param ={
+        "id": Number(sid.textContent),
+        "gender": 1
+    }
+    var myChart = echarts.init(document.getElementById("div4"))
+    var option = {
+        title: {
+            text: '女性用户组成',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+        },
+        series: [
+            {
+                name: '年龄段',
+                type: 'pie',
+                radius: '50%',
+                data: [],
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    }
+    $.get({
+        url: url,
+        data: param,
+        async: false,
+        success: (result) =>{
+            console.log(result.ageTemp[0])
+            for (var i = 0; i < result.ageTemp.length; i++) {
+                option.series[0].data.push({
+                    value: result.sum[i],
+                    name: result.ageTemp[i]
+                })
+            }
+        }
+    })
+    myChart.setOption(option);
+</script>
